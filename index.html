@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Komparasi & Proyeksi Asuransi Jiwa (TMPI 2023)</title>
+    <!-- Memuat Tailwind CSS untuk styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Memuat Google Fonts untuk tipografi -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Custom styling untuk radio button yang lebih menarik */
+        .radio-label {
+            transition: all 0.2s ease-in-out;
+        }
+        input[type="radio"]:checked + .radio-label {
+            border-color: #0891b2; /* cyan-600 */
+            background-color: #ecfeff; /* cyan-50 */
+            color: #0e7490; /* cyan-700 */
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            transform: translateY(-2px);
+        }
+        /* Menyembunyikan elemen dengan transisi */
+        .hidden-transition {
+            opacity: 0;
+            visibility: hidden;
+            height: 0;
+            margin-top: 0;
+            transition: all 0.3s ease-out;
+        }
+        .visible-transition {
+            opacity: 1;
+            visibility: visible;
+            height: auto;
+            margin-top: 1.5rem; /* mt-6 */
+            transition: all 0.3s ease-in;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+    <div class="container mx-auto p-4 sm:p-6 lg:p-8 max-w-4xl">
+        
+        <header class="text-center mb-8">
+            <h1 class="text-3xl sm:text-4xl font-bold text-cyan-800">Analisis Komparatif Produk Asuransi Jiwa</h1>
+            <p class="mt-2 text-md text-gray-600">Menggunakan Tabel Mortalitas Penduduk Indonesia (TMPI) 2023</p>
+        </header>
+
+        <main class="bg-white p-6 sm:p-8 rounded-2xl shadow-lg border border-gray-200">
+            
+            <!-- Langkah 1: Pilihan Produk Asuransi -->
+            <div>
+                <h3 class="text-lg font-semibold text-gray-800 mb-4">1. Pilih Produk Asuransi</h3>
+                <div id="insuranceTypeSelector" class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div>
+                        <input type="radio" name="insurance_type" id="type_berjangka" value="berjangka" class="sr-only" checked>
+                        <label for="type_berjangka" class="radio-label block w-full text-center p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-cyan-500">
+                            <span class="font-semibold block">Berjangka</span>
+                            <span class="text-xs text-gray-500">Term Life</span>
+                        </label>
+                    </div>
+                    <div>
+                        <input type="radio" name="insurance_type" id="type_seumur_hidup" value="seumurHidup" class="sr-only">
+                        <label for="type_seumur_hidup" class="radio-label block w-full text-center p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-cyan-500">
+                            <span class="font-semibold block">Seumur Hidup</span>
+                            <span class="text-xs text-gray-500">Whole Life</span>
+                        </label>
+                    </div>
+                    <div>
+                        <input type="radio" name="insurance_type" id="type_dwiguna" value="dwiguna" class="sr-only">
+                        <label for="type_dwiguna" class="radio-label block w-full text-center p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-cyan-500">
+                            <span class="font-semibold block">Dwiguna</span>
+                            <span class="text-xs text-gray-500">Endowment</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Langkah 2: Input Data -->
+            <div class="mt-8">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4">2. Masukkan Data Diri & Asumsi</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="uangPertanggungan" class="block text-sm font-medium text-gray-700 mb-1">Uang Pertanggungan (Rp)</label>
+                        <input type="number" id="uangPertanggungan" value="500000000" class="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition">
+                    </div>
+                    <div>
+                        <label for="usia" class="block text-sm font-medium text-gray-700 mb-1">Usia Masuk (Tahun)</label>
+                        <input type="number" id="usia" value="30" min="0" max="111" class="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition">
+                    </div>
+                    <div>
+                        <label for="jenisKelamin" class="block text-sm font-medium text-gray-700 mb-1">Jenis Kelamin</label>
+                        <select id="jenisKelamin" class="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition">
+                            <option value="pria">Laki-laki</option>
+                            <option value="wanita">Perempuan</option>
+                        </select>
+                    </div>
+                     <!-- Input Jangka Waktu yang bisa disembunyikan -->
+                    <div id="jangkaWaktuContainer" class="visible-transition">
+                        <label for="jangkaWaktu" class="block text-sm font-medium text-gray-700 mb-1">Jangka Waktu Polis (Tahun)</label>
+                        <input type="number" id="jangkaWaktu" value="20" min="1" class="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition">
+                    </div>
+                     <div>
+                        <label for="sukuBunga" class="block text-sm font-medium text-gray-700 mb-1">Asumsi Suku Bunga (% per tahun)</label>
+                        <input type="number" id="sukuBunga" value="5" step="0.1" class="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tombol Aksi -->
+            <div class="mt-8 text-center">
+                <button id="hitungButton" class="w-full md:w-auto bg-cyan-600 text-white font-bold py-3 px-12 rounded-lg hover:bg-cyan-700 focus:outline-none focus:ring-4 focus:ring-cyan-500 focus:ring-opacity-50 transition-transform transform hover:scale-105">
+                    Hitung & Analisis
+                </button>
+            </div>
+
+            <!-- Area Hasil Perhitungan -->
+            <div id="hasil" class="mt-10 border-t pt-8 hidden">
+                <div class="bg-cyan-50 border-l-4 border-cyan-500 p-6 rounded-lg mb-8">
+                    <h3 class="text-lg font-semibold text-cyan-800">Premi Tahunan Bersih</h3>
+                    <p id="premiTahunan" class="text-3xl font-bold text-cyan-900 mt-1">Rp 0</p>
+                </div>
+                
+                <div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">Proyeksi Nilai Tebus (Cadangan Premi)</h3>
+                    <div class="overflow-x-auto rounded-lg border border-gray-200 max-h-96">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-100 sticky top-0">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Tahun</th>
+                                    <th class="px-6 py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Usia</th>
+                                    <th class="px-6 py-3 text-right text-xs font-bold text-gray-600 uppercase tracking-wider">Estimasi Nilai Tebus (Rp)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabelNilaiTebusBody" class="bg-white divide-y divide-gray-200"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Pesan Error -->
+            <div id="error" class="mt-6 hidden bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-lg">
+                <p id="errorMessage"></p>
+            </div>
+
+        </main>
+
+        <footer class="text-center mt-8 text-sm text-gray-500">
+            <p>Data berdasarkan Tabel Mortalitas Penduduk Indonesia (TMPI) 2023.</p>
+        </footer>
+    </div>
+
+    <script>
+        // --- DATA TABEL MORTALITAS PENDUDUK INDONESIA (TMPI) 2023 ---
+        // Data probabilitas hidup (px) diekstrak dari gambar yang diberikan.
+        const tmpi_2023_px = [
+            { usia: 0, px_pria: 0.990209, px_wanita: 0.992120 }, { usia: 1, px_pria: 0.998474, px_wanita: 0.999190 },
+            { usia: 2, px_pria: 0.998921, px_wanita: 0.999420 }, { usia: 3, px_pria: 0.999101, px_wanita: 0.999580 },
+            { usia: 4, px_pria: 0.999229, px_wanita: 0.999511 }, { usia: 5, px_pria: 0.999403, px_wanita: 0.999530 },
+            { usia: 6, px_pria: 0.999422, px_wanita: 0.999531 }, { usia: 7, px_pria: 0.999425, px_wanita: 0.999540 },
+            { usia: 8, px_pria: 0.999434, px_wanita: 0.999546 }, { usia: 9, px_pria: 0.999453, px_wanita: 0.999568 },
+            { usia: 10, px_pria: 0.999477, px_wanita: 0.999564 }, { usia: 11, px_pria: 0.999493, px_wanita: 0.999502 },
+            { usia: 12, px_pria: 0.999496, px_wanita: 0.999498 }, { usia: 13, px_pria: 0.999483, px_wanita: 0.999527 },
+            { usia: 14, px_pria: 0.999457, px_wanita: 0.999502 }, { usia: 15, px_pria: 0.999422, px_wanita: 0.999472 },
+            { usia: 16, px_pria: 0.999399, px_wanita: 0.999442 }, { usia: 17, px_pria: 0.999356, px_wanita: 0.999410 },
+            { usia: 18, px_pria: 0.999303, px_wanita: 0.999372 }, { usia: 19, px_pria: 0.999266, px_wanita: 0.999327 },
+            { usia: 20, px_pria: 0.999224, px_wanita: 0.999280 }, { usia: 21, px_pria: 0.999178, px_wanita: 0.999233 },
+            { usia: 22, px_pria: 0.999135, px_wanita: 0.999195 }, { usia: 23, px_pria: 0.999087, px_wanita: 0.999134 },
+            { usia: 24, px_pria: 0.999033, px_wanita: 0.999082 }, { usia: 25, px_pria: 0.998977, px_wanita: 0.999033 },
+            { usia: 26, px_pria: 0.998918, px_wanita: 0.998971 }, { usia: 27, px_pria: 0.998884, px_wanita: 0.998927 },
+            { usia: 28, px_pria: 0.998804, px_wanita: 0.998871 }, { usia: 29, px_pria: 0.998737, px_wanita: 0.998819 },
+            { usia: 30, px_pria: 0.998673, px_wanita: 0.998708 }, { usia: 31, px_pria: 0.998601, px_wanita: 0.998646 },
+            { usia: 32, px_pria: 0.998532, px_wanita: 0.998583 }, { usia: 33, px_pria: 0.998368, px_wanita: 0.998511 },
+            { usia: 34, px_pria: 0.998272, px_wanita: 0.998446 }, { usia: 35, px_pria: 0.998154, px_wanita: 0.998353 },
+            { usia: 36, px_pria: 0.998006, px_wanita: 0.998248 }, { usia: 37, px_pria: 0.997877, px_wanita: 0.998118 },
+            { usia: 38, px_pria: 0.997718, px_wanita: 0.997970 }, { usia: 39, px_pria: 0.997532, px_wanita: 0.997782 },
+            { usia: 40, px_pria: 0.997319, px_wanita: 0.997583 }, { usia: 41, px_pria: 0.997059, px_wanita: 0.997345 },
+            { usia: 42, px_pria: 0.996841, px_wanita: 0.997097 }, { usia: 43, px_pria: 0.996529, px_wanita: 0.996836 },
+            { usia: 44, px_pria: 0.996184, px_wanita: 0.996542 }, { usia: 45, px_pria: 0.995818, px_wanita: 0.996244 },
+            { usia: 46, px_pria: 0.995410, px_wanita: 0.995824 }, { usia: 47, px_pria: 0.994961, px_wanita: 0.995390 },
+            { usia: 48, px_pria: 0.994389, px_wanita: 0.994922 }, { usia: 49, px_pria: 0.993777, px_wanita: 0.994420 },
+            { usia: 50, px_pria: 0.993073, px_wanita: 0.993821 }, { usia: 51, px_pria: 0.992262, px_wanita: 0.993204 },
+            { usia: 52, px_pria: 0.991466, px_wanita: 0.992589 }, { usia: 53, px_pria: 0.990466, px_wanita: 0.991958 },
+            { usia: 54, px_pria: 0.989543, px_wanita: 0.991289 }, { usia: 55, px_pria: 0.988596, px_wanita: 0.990598 },
+            { usia: 56, px_pria: 0.987543, px_wanita: 0.989833 }, { usia: 57, px_pria: 0.986685, px_wanita: 0.988923 },
+            { usia: 58, px_pria: 0.985691, px_wanita: 0.987816 }, { usia: 59, px_pria: 0.984595, px_wanita: 0.986623 },
+            { usia: 60, px_pria: 0.983383, px_wanita: 0.985344 }, { usia: 61, px_pria: 0.982133, px_wanita: 0.984104 },
+            { usia: 62, px_pria: 0.980799, px_wanita: 0.982877 }, { usia: 63, px_pria: 0.979418, px_wanita: 0.981553 },
+            { usia: 64, px_pria: 0.977826, px_wanita: 0.980249 }, { usia: 65, px_pria: 0.975726, px_wanita: 0.978885 },
+            { usia: 66, px_pria: 0.974019, px_wanita: 0.977442 }, { usia: 67, px_pria: 0.971268, px_wanita: 0.975918 },
+            { usia: 68, px_pria: 0.969699, px_wanita: 0.972381 }, { usia: 69, px_pria: 0.966969, px_wanita: 0.968816 },
+            { usia: 70, px_pria: 0.964545, px_wanita: 0.965093 }, { usia: 71, px_pria: 0.962902, px_wanita: 0.957616 },
+            { usia: 72, px_pria: 0.959082, px_wanita: 0.947934 }, { usia: 73, px_pria: 0.958069, px_wanita: 0.938891 },
+            { usia: 74, px_pria: 0.956967, px_wanita: 0.929622 }, { usia: 75, px_pria: 0.958069, px_wanita: 0.919716 },
+            { usia: 76, px_pria: 0.958069, px_wanita: 0.909738 }, { usia: 77, px_pria: 0.958069, px_wanita: 0.897093 },
+            { usia: 78, px_pria: 0.958321, px_wanita: 0.885297 }, { usia: 79, px_pria: 0.955965, px_wanita: 0.872340 },
+            { usia: 80, px_pria: 0.953604, px_wanita: 0.859603 }, { usia: 81, px_pria: 0.948944, px_wanita: 0.846397 },
+            { usia: 82, px_pria: 0.945363, px_wanita: 0.829622 }, { usia: 83, px_pria: 0.938369, px_wanita: 0.816957 },
+            { usia: 84, px_pria: 0.934301, px_wanita: 0.800130 }, { usia: 85, px_pria: 0.930468, px_wanita: 0.785009 },
+            { usia: 86, px_pria: 0.924079, px_wanita: 0.771208 }, { usia: 87, px_pria: 0.916121, px_wanita: 0.759456 },
+            { usia: 88, px_pria: 0.908128, px_wanita: 0.749730 }, { usia: 89, px_pria: 0.899705, px_wanita: 0.739601 },
+            { usia: 90, px_pria: 0.889410, px_wanita: 0.728889 }, { usia: 91, px_pria: 0.879002, px_wanita: 0.718820 },
+            { usia: 92, px_pria: 0.864700, px_wanita: 0.709195 }, { usia: 93, px_pria: 0.850286, px_wanita: 0.699646 },
+            { usia: 94, px_pria: 0.834301, px_wanita: 0.689876 }, { usia: 95, px_pria: 0.818543, px_wanita: 0.678603 },
+            { usia: 96, px_pria: 0.801804, px_wanita: 0.668601 }, { usia: 7, px_pria: 0.785925, px_wanita: 0.658604 },
+            { usia: 98, px_pria: 0.777592, px_wanita: 0.648505 }, { usia: 99, px_pria: 0.755991, px_wanita: 0.638764 },
+            { usia: 100, px_pria: 0.732991, px_wanita: 0.627642 }, { usia: 101, px_pria: 0.708891, px_wanita: 0.617448 },
+            { usia: 102, px_pria: 0.686703, px_wanita: 0.607515 }, { usia: 103, px_pria: 0.657577, px_wanita: 0.596215 },
+            { usia: 104, px_pria: 0.630638, px_wanita: 0.585527 }, { usia: 105, px_pria: 0.603363, px_wanita: 0.575227 },
+            { usia: 106, px_pria: 0.574931, px_wanita: 0.565527 }, { usia: 107, px_pria: 0.546511, px_wanita: 0.555962 },
+            { usia: 108, px_pria: 0.519867, px_wanita: 0.536962 }, { usia: 109, px_pria: 0.489567, px_wanita: 0.518197 },
+            { usia: 110, px_pria: 0.461351, px_wanita: 0.481468 }, { usia: 111, px_pria: 0.433729, px_wanita: 0.440316 },
+        ];
+        
+        // --- Variabel Global & Elemen DOM ---
+        let generatedLxTable = [];
+        const hitungButton = document.getElementById('hitungButton');
+        const hasilDiv = document.getElementById('hasil');
+        const errorDiv = document.getElementById('error');
+        const errorMessageP = document.getElementById('errorMessage');
+        const insuranceTypeRadios = document.querySelectorAll('input[name="insurance_type"]');
+        const jangkaWaktuContainer = document.getElementById('jangkaWaktuContainer');
+
+        // --- EVENT LISTENERS ---
+        hitungButton.addEventListener('click', handleCalculate);
+        insuranceTypeRadios.forEach(radio => {
+            radio.addEventListener('change', (event) => {
+                jangkaWaktuContainer.classList.toggle('hidden-transition', event.target.value === 'seumurHidup');
+                jangkaWaktuContainer.classList.toggle('visible-transition', event.target.value !== 'seumurHidup');
+            });
+        });
+
+        // --- FUNGSI UTAMA ---
+        function handleCalculate() {
+            hasilDiv.classList.add('hidden');
+            errorDiv.classList.add('hidden');
+            try {
+                const inputs = getInputs();
+                validateInputs(inputs);
+                generateLxTable(inputs.jenisKelamin); // Generate lx table based on selected gender
+                const results = hitungAktuaria(inputs);
+                tampilkanHasil(results);
+            } catch (e) {
+                tampilkanError(e.message);
+            }
+        }
+        
+        function generateLxTable(jenisKelamin) {
+            const radix = 10000000; // Mulai dengan 10 juta jiwa
+            const px_col = jenisKelamin === 'pria' ? 'px_pria' : 'px_wanita';
+            generatedLxTable = [];
+            let currentLx = radix;
+            generatedLxTable.push({ usia: 0, lx: currentLx });
+            
+            for (let i = 0; i < tmpi_2023_px.length; i++) {
+                const record = tmpi_2023_px.find(p => p.usia === i);
+                if (!record) break;
+                const px = record[px_col];
+                const nextLx = currentLx * px;
+                generatedLxTable.push({ usia: i + 1, lx: nextLx });
+                currentLx = nextLx;
+            }
+        }
+
+        // ... (fungsi getInputs, validateInputs, tampilkanError, formatRupiah, tampilkanHasil tetap sama) ...
+        function getInputs() { /* ... kode sama seperti sebelumnya ... */ return { tipeAsuransi: document.querySelector('input[name="insurance_type"]:checked').value, up: parseFloat(document.getElementById('uangPertanggungan').value), usia: parseInt(document.getElementById('usia').value), jenisKelamin: document.getElementById('jenisKelamin').value, jangkaWaktu: parseInt(document.getElementById('jangkaWaktu').value), bunga: parseFloat(document.getElementById('sukuBunga').value) / 100 }; }
+        function validateInputs({ tipeAsuransi, up, usia, jangkaWaktu, bunga }) { if (isNaN(up) || isNaN(usia) || isNaN(bunga) || up <= 0 || usia < 0) { throw new Error("Mohon isi Uang Pertanggungan, Usia, dan Bunga dengan angka valid."); } if (tipeAsuransi !== 'seumurHidup' && (isNaN(jangkaWaktu) || jangkaWaktu <= 0)) { throw new Error("Mohon isi Jangka Waktu Polis yang valid."); } const usiaMaks = tipeAsuransi === 'seumurHidup' ? 111 : usia + jangkaWaktu; if (usiaMaks > 111) { throw new Error("Kombinasi usia dan jangka waktu melebihi data tabel mortalitas (maks 111 tahun)."); } }
+        function tampilkanError(pesan) { errorMessageP.textContent = pesan; errorDiv.classList.remove('hidden'); }
+        function formatRupiah(angka) { return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(angka); }
+        function tampilkanHasil({ premiTahunan, proyeksiNilaiTebus }) { document.getElementById('premiTahunan').textContent = formatRupiah(premiTahunan); const tabelBody = document.getElementById('tabelNilaiTebusBody'); tabelBody.innerHTML = ''; if (proyeksiNilaiTebus.length === 0) { tabelBody.innerHTML = `<tr><td colspan="3" class="text-center py-4 text-gray-500">Tidak ada nilai tebus untuk polis dengan durasi 1 tahun atau kurang.</td></tr>`; } else { proyeksiNilaiTebus.forEach(item => { tabelBody.innerHTML += `<tr class="hover:bg-gray-50"><td class="px-6 py-4 text-sm font-medium text-gray-900">${item.tahun}</td><td class="px-6 py-4 text-sm text-gray-500">${item.usia}</td><td class="px-6 py-4 text-sm text-gray-800 text-right font-mono">${formatRupiah(item.nilaiTebus)}</td></tr>`; }); } hasilDiv.classList.remove('hidden'); }
+        
+        // --- OTAK PERHITUNGAN AKTUARIA (MENGGUNAKAN DATA TMPI 2023) ---
+        function hitungAktuaria({ tipeAsuransi, up, usia, jenisKelamin, jangkaWaktu, bunga }) {
+            const v = 1 / (1 + bunga);
+            const batasUsia = 111;
+
+            const getLx = (x) => {
+                const data = generatedLxTable.find(d => d.usia === x);
+                return data ? data.lx : 0;
+            };
+
+            // --- FUNGSI DASAR AKTUARIA ---
+            const nAx = (x, n) => { // Premi Tunggal Bersih Berjangka
+                let total = 0; const lxAwal = getLx(x); if (lxAwal === 0) return 0;
+                for (let k = 0; k < n; k++) { total += Math.pow(v, k + 1) * (getLx(x + k) - getLx(x + k + 1)); }
+                return total / lxAwal;
+            };
+
+            const Ax = (x) => { // Premi Tunggal Bersih Seumur Hidup
+                return nAx(x, batasUsia - x);
+            };
+            
+            const nEx = (x, n) => { // Premi Tunggal Bersih Dwiguna Murni (Pure Endowment)
+                const lxAwal = getLx(x); if (lxAwal === 0) return 0;
+                return Math.pow(v, n) * (getLx(x + n) / lxAwal);
+            };
+
+            const adx_n = (x, n) => { // Anuitas Awal Berjangka
+                let total = 0; const lxAwal = getLx(x); if (lxAwal === 0) return 0;
+                for (let k = 0; k < n; k++) { total += Math.pow(v, k) * getLx(x + k); }
+                return total / lxAwal;
+            };
+
+            const adx = (x) => { // Anuitas Awal Seumur Hidup
+                return adx_n(x, batasUsia - x + 1);
+            };
+
+            // --- PERHITUNGAN PREMI ---
+            let premiTunggal, anuitas;
+            if (tipeAsuransi === 'berjangka') {
+                premiTunggal = nAx(usia, jangkaWaktu);
+                anuitas = adx_n(usia, jangkaWaktu);
+            } else if (tipeAsuransi === 'seumurHidup') {
+                premiTunggal = Ax(usia);
+                anuitas = adx(usia);
+            } else { // dwiguna
+                premiTunggal = nAx(usia, jangkaWaktu) + nEx(usia, jangkaWaktu);
+                anuitas = adx_n(usia, jangkaWaktu);
+            }
+
+            if (anuitas === 0) throw new Error("Perhitungan premi tidak valid (pembagi anuitas nol).");
+            const premiTahunanNet = (premiTunggal / anuitas) * up;
+
+            // --- PERHITUNGAN NILAI TEBUS (CADANGAN) ---
+            const proyeksiNilaiTebus = [];
+            const durasiProyeksi = tipeAsuransi === 'seumurHidup' ? (batasUsia - usia) : jangkaWaktu;
+
+            for (let t = 1; t < durasiProyeksi; t++) {
+                const usiaSaatIni = usia + t;
+                const sisaJangka = tipeAsuransi === 'seumurHidup' ? (batasUsia - usiaSaatIni) : (jangkaWaktu - t);
+
+                let manfaatMasaDepan, premiMasaDepan;
+                if (tipeAsuransi === 'berjangka') {
+                    manfaatMasaDepan = nAx(usiaSaatIni, sisaJangka);
+                    premiMasaDepan = adx_n(usiaSaatIni, sisaJangka);
+                } else if (tipeAsuransi === 'seumurHidup') {
+                    manfaatMasaDepan = Ax(usiaSaatIni);
+                    premiMasaDepan = adx(usiaSaatIni);
+                } else { // dwiguna
+                    manfaatMasaDepan = nAx(usiaSaatIni, sisaJangka) + nEx(usiaSaatIni, sisaJangka);
+                    premiMasaDepan = adx_n(usiaSaatIni, sisaJangka);
+                }
+                
+                const nilaiTebus = (manfaatMasaDepan - (premiTahunanNet / up) * premiMasaDepan) * up;
+                proyeksiNilaiTebus.push({
+                    tahun: t,
+                    usia: usiaSaatIni,
+                    nilaiTebus: Math.round(Math.max(0, nilaiTebus))
+                });
+            }
+
+            return {
+                premiTahunan: Math.round(premiTahunanNet),
+                proyeksiNilaiTebus: proyeksiNilaiTebus
+            };
+        }
+    </script>
+</body>
+</html>
